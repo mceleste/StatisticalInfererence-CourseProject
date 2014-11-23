@@ -1,0 +1,53 @@
+---
+title: "Statistical Inference - Course Project Part 1"
+author: "Michael Celeste"
+date: "Saturday, November 22, 2014"
+output: html_document
+---
+
+The following analysis simulates an exponential distribution where lambda is the rate parameter. The
+theoretical mean of the distribution is 1/lambda as well as the standard deviation.
+
+```{r, echo=TRUE}
+
+## Create exponential distribution of averages simulate - 1000
+edist <- replicate(1000, mean(rexp(40,0.2)))
+
+## Create a dataframe for ggplot use
+df <- data.frame(x=edist)
+
+## Calculate theoretical mean (1/lambda) where lambda = 0.2
+mu <- 1/0.2
+1/mu^2
+## ggplot creation
+##gp <- ggplot(df, aes(x=x))
+##gp <- gp + geom_histogram(binwidth=0.1, aes(y=..density..), fill="salmon", colour="black")+geom_density()
+##gp <- gp + geom_vline(xintercept = mu1, colour="red", size=1)
+##gp <- gp + geom_vline(xintercept = mu, colour="green", size=1)
+
+## Standard deviation
+sqrt((sum(edist^2) - mean(edist^2))/1000)
+
+```
+
+Theoretical center of the exponential distribut is equal to 1/lambda which is equal to `r mu ` where lambda is equal to 0.2.
+
+The 
+Theoretical variance is 1/lambda^2
+
+```{r, echo=FALSE}
+
+hist(edist, breaks=100)
+
+abline(v=mean(edist), col="blue")
+
+abline(v=(1/0.2), col="red")
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Use a line graph with colored areas to compare distributions
+
+distribution of sample variances?
+

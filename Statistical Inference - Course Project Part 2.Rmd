@@ -1,0 +1,73 @@
+---
+title: "Statistical Inference - Course Project Part 2"
+author: "Michael Celeste"
+date: "Saturday, November 22, 2014"
+output: word_document
+---
+
+# Load data and perform a basic exploratory analysis of the ToothGrowth data
+```{r, echo=TRUE}
+
+library(ggplot2)
+
+## Data frame structure
+str(ToothGrowth)
+
+## Data frame values
+summary(ToothGrowth)
+
+## Show first few rows of data
+head(ToothGrowth)
+
+## Aggregate the mean length grouped by supplement and dose
+tg <- aggregate(ToothGrowth$len, list(ToothGrowth$supp, ToothGrowth$dose), mean)
+
+## Rename the columns in tg
+names(tg)[1] <- "supplement"
+names(tg)[2] <- "dose"
+names(tg)[3] <- "length"
+
+## Plot the data
+ggplot(tg, aes(x=dose, y=length, colour=supplement)) + geom_line()
+
+```
+
+Thirty subjects took OJ and another 30 took Vitamin C. The means for tooth length differ for various doses except for the 2.0 dose. 
+
+A test comparing the means of each supplement will be performed to see if there is enough of a difference of one supplement to the other.
+
+```{r, echo=TRUE}
+
+## Calculate the mean lenght for OJ
+ojmean <- mean( ToothGrowth[ToothGrowth$supp == "OJ", "len"] )
+
+ojsd <- sd( ToothGrowth[ToothGrowth$supp == "OJ", "len"] )
+
+## Calculate the mean length for VC
+vcmean <- mean( ToothGrowth[ToothGrowth$supp == "VC", "len"] )
+
+vcsd <- sd( ToothGrowth[ToothGrowth$supp == "VC", "len"] )
+
+## Calculate the confidence level (95%) of the mean OJ supplement and compare it to the mean of VC supplement
+ojmean + c(-1,1)*qnorm(0.95, lower.tail=T)*ojsd/sqrt(30)
+
+```
+
+The VC supplement mean (`r vcmean `) is below the confidence interval therefore it seems that the VC supplement does not increase the length as much as OJ. Because the size of the sample for each supplement is 30 it may be better to do T tests. A t-test will be done for all doses then one for each dose level.
+
+```{r, echo=TRUE}
+
+## Create a t-test for the type of supplement and dose (each) 
+t.test(ToothGrowth[ToothGrowth$supp == "OJ", "len"] - ToothGrowth[ToothGrowth$supp == "VC", "len"])
+
+t.test(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose==0.5, "len"] - ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose==0.5, "len"])
+
+t.test(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose==1, "len"] - ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose==1, "len"])
+
+t.test(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose==2, "len"] - ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose==2, "len"])
+
+```
+
+## Conclusions
+
+From the results of the T-tests in each dose it can be inferred that the effectiveness of the VC supplement is not as effective as the OJ until dose number 2. Therefore, the minimum amount of VC supplement that should be taken if trying to supplement OJ is a dose of 2. 
